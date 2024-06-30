@@ -1,0 +1,18 @@
+### Ping server
+GET http://localhost:8080/ping
+
+### Check status of workers
+GET http://localhost:8080/status
+
+### Submit a job with 1 worker
+POST http://localhost:8080/short/1
+
+
+### Submit a job with 3 workers
+POST http://localhost:8080/short/3
+
+### Submit a job with 20 workers
+POST http://localhost:8080/short/20
+
+### Submit a long job with 3 workers
+POST http://localhost:8080/long/3
