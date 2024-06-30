@@ -14,6 +14,8 @@ func SetupRouter(s chan models.JobSpec, r chan int, workers []models.Worker) *gi
 
 	router.GET("/status", controllers.CheckWorkerStatus(workers))
 
+	router.GET("/ws", controllers.WorkerStatusSocket(&workers))
+
 	router.POST("/short/:workerCount", controllers.RunShortJobs(s, r))
 
 	router.POST("/long/:workerCount", controllers.RunLongJobs(s, r))
