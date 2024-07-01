@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(s chan models.JobSpec, r chan int, workers []models.Worker) *gin.Engine {
+func SetupRouter(s chan models.JobSpec, r chan int, workers []models.Worker, jobs *[]models.JobSpec) *gin.Engine {
 	router := gin.Default()
 
 	router.GET("/ping", controllers.ServerHealthCheck)
@@ -16,9 +16,9 @@ func SetupRouter(s chan models.JobSpec, r chan int, workers []models.Worker) *gi
 
 	router.GET("/ws", controllers.WorkerStatusSocket(&workers))
 
-	router.POST("/short/:workerCount", controllers.RunShortJobs(s, r))
+	router.POST("/short/:workerCount", controllers.RunShortJobs(s, r, jobs))
 
-	router.POST("/long/:workerCount", controllers.RunLongJobs(s, r))
+	router.POST("/long/:workerCount", controllers.RunLongJobs(s, r, jobs))
 
 	return router
 }

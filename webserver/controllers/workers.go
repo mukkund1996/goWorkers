@@ -25,7 +25,7 @@ func ServerHealthCheck(c *gin.Context) {
 	})
 }
 
-func RunShortJobs(s chan models.JobSpec, r chan int) func(c *gin.Context) {
+func RunShortJobs(s chan models.JobSpec, r chan int, jobs *[]models.JobSpec) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		results := []int{}
 		numWorkers, err := strconv.Atoi(c.Param("workerCount"))
@@ -34,7 +34,8 @@ func RunShortJobs(s chan models.JobSpec, r chan int) func(c *gin.Context) {
 		}
 
 		for i := 0; i < numWorkers; i++ {
-			jobSpec := models.JobSpec{Id: utils.GenerateId(), Operation: utils.JobShort}
+			jobSpec := models.JobSpec{Id: utils.GenerateId("short"), Operation: utils.JobShort}
+			*jobs = append(*jobs, jobSpec)
 			s <- jobSpec
 		}
 		for i := 0; i < numWorkers; i++ {
@@ -47,7 +48,7 @@ func RunShortJobs(s chan models.JobSpec, r chan int) func(c *gin.Context) {
 	}
 }
 
-func RunLongJobs(s chan models.JobSpec, r chan int) func(c *gin.Context) {
+func RunLongJobs(s chan models.JobSpec, r chan int, jobs *[]models.JobSpec) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		results := []int{}
 		numWorkers, err := strconv.Atoi(c.Param("workerCount"))
@@ -56,7 +57,8 @@ func RunLongJobs(s chan models.JobSpec, r chan int) func(c *gin.Context) {
 		}
 
 		for i := 0; i < numWorkers; i++ {
-			jobSpec := models.JobSpec{Id: utils.GenerateId(), Operation: utils.JobLong}
+			jobSpec := models.JobSpec{Id: utils.GenerateId("long"), Operation: utils.JobLong}
+			*jobs = append(*jobs, jobSpec)
 			s <- jobSpec
 		}
 		for i := 0; i < numWorkers; i++ {
@@ -86,7 +88,7 @@ func WorkerStatusSocket(workers *[]models.Worker) func(c *gin.Context) {
 		defer conn.Close()
 
 		for {
-			body, _ := json.MarshalIndent(workers, "", "\t")
+			body, _ := json.Marshal(workers)
 			conn.WriteMessage(websocket.TextMessage, body)
 			time.Sleep(config.SocketPollingInterval)
 		}

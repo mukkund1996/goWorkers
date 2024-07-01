@@ -10,6 +10,7 @@ import (
 func main() {
 	sender := make(chan models.JobSpec, config.MaxQueueLength)
 	receiver := make(chan int, config.MaxQueueLength)
+	jobs := []models.JobSpec{}
 
 	// Creating and initializing workers
 	workers := make([]models.Worker, config.DefaultNumWorkers)
@@ -23,6 +24,6 @@ func main() {
 		go workers[i].StartListening()
 	}
 
-	router := routes.SetupRouter(sender, receiver, workers)
+	router := routes.SetupRouter(sender, receiver, workers, &jobs)
 	router.Run(fmt.Sprintf(":%d", config.AppPort))
 }

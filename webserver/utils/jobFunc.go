@@ -12,10 +12,10 @@ func JobShort() int {
 
 func JobLong() int {
 	time.Sleep(time.Duration(rand.Intn(10)) * time.Second)
-	return 1
+	return 5
 }
 
-func GenerateId() string {
+func GenerateId(prefix string) string {
 	currentTime := time.Now()
-	return currentTime.Format(time.RFC3339Nano)
+	return prefix + "_" + currentTime.Format(time.RFC3339Nano)
 }
