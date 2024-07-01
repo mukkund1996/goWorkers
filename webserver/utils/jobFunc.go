@@ -21,8 +21,18 @@ func GenerateId(prefix string) string {
 	return prefix + "_" + currentTime.Format(time.RFC3339Nano)
 }
 
-func CollectResults(receiver <-chan models.ResultSpec, results map[string][]int) {
+func filter[T any](ss []T, test func(T) bool) (ret []T) {
+	for _, s := range ss {
+		if test(s) {
+			ret = append(ret, s)
+		}
+	}
+	return
+}
+
+func CollectResults(receiver <-chan models.ResultSpec, results map[string][]int, jobs *[]models.JobSpec) {
 	for r := range receiver {
+		*jobs = filter(*jobs, func(j models.JobSpec) bool { return j.Id == r.Id })
 		result := results[r.Id]
 		result = append(result, r.Result)
 		results[r.Id] = result

@@ -27,7 +27,7 @@ func main() {
 	}
 
 	// Consolidate the results
-	go utils.CollectResults(receiver, results)
+	go utils.CollectResults(receiver, results, &jobs)
 
 	router := routes.SetupRouter(sender, receiver, workers, &jobs, results)
 	router.Run(fmt.Sprintf(":%d", config.AppPort))

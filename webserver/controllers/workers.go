@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -115,7 +114,6 @@ func JobQueueSocket(jobs []models.JobSpec) func(c *gin.Context) {
 			for _, j := range jobs {
 				ids = append(ids, j.Id)
 			}
-			fmt.Println(ids)
 			body, _ := json.Marshal(ids)
 			conn.WriteMessage(websocket.TextMessage, body)
 			time.Sleep(config.SocketPollingInterval)
