@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"net/http"
 	"strconv"
 	"time"
 	"webserver/config"
@@ -15,6 +16,7 @@ import (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin:     func(*http.Request) bool { return true },
 }
 
 func ServerHealthCheck(c *gin.Context) {
@@ -84,12 +86,8 @@ func WorkerStatusSocket(workers *[]models.Worker) func(c *gin.Context) {
 		defer conn.Close()
 
 		for {
-			message := []byte("")
-			for w := range *workers {
-				body, _ := json.Marshal(w)
-				message = append(message, []byte(body)...)
-			}
-			conn.WriteMessage(websocket.TextMessage, message)
+			body, _ := json.MarshalIndent(workers, "", "\t")
+			conn.WriteMessage(websocket.TextMessage, body)
 			time.Sleep(config.SocketPollingInterval)
 		}
 	}
