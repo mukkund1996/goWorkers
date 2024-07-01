@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -25,32 +26,26 @@ func ServerHealthCheck(c *gin.Context) {
 	})
 }
 
-func RunShortJobs(s chan models.JobSpec, r chan int, jobs *[]models.JobSpec) func(c *gin.Context) {
+func RunShortJobs(s chan models.JobSpec, jobs *[]models.JobSpec) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		results := []int{}
 		numWorkers, err := strconv.Atoi(c.Param("workerCount"))
 		if err != nil {
 			return
 		}
-
+		reqId := utils.GenerateId("short")
 		for i := 0; i < numWorkers; i++ {
-			jobSpec := models.JobSpec{Id: utils.GenerateId("short"), Operation: utils.JobShort}
+			jobSpec := models.JobSpec{Id: reqId, Operation: utils.JobShort}
 			*jobs = append(*jobs, jobSpec)
 			s <- jobSpec
 		}
-		for i := 0; i < numWorkers; i++ {
-			results = append(results, <-r)
-		}
 		c.IndentedJSON(200, gin.H{
-			"status": "Completed",
-			"result": results,
+			"status": "Started",
 		})
 	}
 }
 
-func RunLongJobs(s chan models.JobSpec, r chan int, jobs *[]models.JobSpec) func(c *gin.Context) {
+func RunLongJobs(s chan models.JobSpec, jobs *[]models.JobSpec) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		results := []int{}
 		numWorkers, err := strconv.Atoi(c.Param("workerCount"))
 		if err != nil {
 			return
@@ -61,12 +56,8 @@ func RunLongJobs(s chan models.JobSpec, r chan int, jobs *[]models.JobSpec) func
 			*jobs = append(*jobs, jobSpec)
 			s <- jobSpec
 		}
-		for i := 0; i < numWorkers; i++ {
-			results = append(results, <-r)
-		}
 		c.IndentedJSON(200, gin.H{
 			"status": "Completed",
-			"result": results,
 		})
 	}
 }
@@ -89,6 +80,43 @@ func WorkerStatusSocket(workers *[]models.Worker) func(c *gin.Context) {
 
 		for {
 			body, _ := json.Marshal(workers)
+			conn.WriteMessage(websocket.TextMessage, body)
+			time.Sleep(config.SocketPollingInterval)
+		}
+	}
+}
+
+func JobResultSocket(results map[string][]int) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			return
+		}
+		defer conn.Close()
+
+		for {
+			body, _ := json.Marshal(results)
+			conn.WriteMessage(websocket.TextMessage, body)
+			time.Sleep(config.SocketPollingInterval)
+		}
+	}
+}
+
+func JobQueueSocket(jobs []models.JobSpec) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			return
+		}
+		defer conn.Close()
+
+		for {
+			ids := []string{}
+			for _, j := range jobs {
+				ids = append(ids, j.Id)
+			}
+			fmt.Println(ids)
+			body, _ := json.Marshal(ids)
 			conn.WriteMessage(websocket.TextMessage, body)
 			time.Sleep(config.SocketPollingInterval)
 		}

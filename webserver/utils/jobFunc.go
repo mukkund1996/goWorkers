@@ -3,6 +3,7 @@ package utils
 import (
 	"math/rand"
 	"time"
+	"webserver/models"
 )
 
 func JobShort() int {
@@ -18,4 +19,12 @@ func JobLong() int {
 func GenerateId(prefix string) string {
 	currentTime := time.Now()
 	return prefix + "_" + currentTime.Format(time.RFC3339Nano)
+}
+
+func CollectResults(receiver <-chan models.ResultSpec, results map[string][]int) {
+	for r := range receiver {
+		result := results[r.Id]
+		result = append(result, r.Result)
+		results[r.Id] = result
+	}
 }

@@ -9,12 +9,17 @@ type JobSpec struct {
 	Operation func() int
 }
 
+type ResultSpec struct {
+	Id     string
+	Result int
+}
+
 type Worker struct {
 	Id    int
 	Busy  *bool
 	JobId *string
 	r     <-chan JobSpec
-	s     chan<- int
+	s     chan<- ResultSpec
 }
 
 func (w Worker) StartListening() {
@@ -23,14 +28,14 @@ func (w Worker) StartListening() {
 		fmt.Printf("Worker %d: Received job %s\n", w.Id, j.Id)
 		*(w.Busy) = true
 		*(w.JobId) = j.Id
-		w.s <- j.Operation()
+		w.s <- ResultSpec{Id: j.Id, Result: j.Operation()}
 		fmt.Printf("Worker %d: Completed job\n", w.Id)
 		*(w.Busy) = false
 		*(w.JobId) = ""
 	}
 }
 
-func CreateWorker(i int, r <-chan JobSpec, s chan<- int) Worker {
+func CreateWorker(i int, r <-chan JobSpec, s chan<- ResultSpec) Worker {
 	isWorking := false
 	job := ""
 	return Worker{Id: i, Busy: &isWorking, JobId: &job, r: r, s: s}

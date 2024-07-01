@@ -5,12 +5,14 @@ import (
 	"webserver/config"
 	"webserver/models"
 	"webserver/routes"
+	"webserver/utils"
 )
 
 func main() {
 	sender := make(chan models.JobSpec, config.MaxQueueLength)
-	receiver := make(chan int, config.MaxQueueLength)
+	receiver := make(chan models.ResultSpec, config.MaxQueueLength)
 	jobs := []models.JobSpec{}
+	results := make(map[string][]int)
 
 	// Creating and initializing workers
 	workers := make([]models.Worker, config.DefaultNumWorkers)
@@ -24,6 +26,9 @@ func main() {
 		go workers[i].StartListening()
 	}
 
-	router := routes.SetupRouter(sender, receiver, workers, &jobs)
+	// Consolidate the results
+	go utils.CollectResults(receiver, results)
+
+	router := routes.SetupRouter(sender, receiver, workers, &jobs, results)
 	router.Run(fmt.Sprintf(":%d", config.AppPort))
 }
