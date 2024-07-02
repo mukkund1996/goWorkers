@@ -30,9 +30,8 @@ func filter[T any](ss []T, test func(T) bool) (ret []T) {
 	return
 }
 
-func CollectResults(receiver <-chan models.ResultSpec, results map[string][]int, jobs *[]models.JobSpec) {
+func CollectResults(receiver <-chan models.ResultSpec, results map[string][]int) {
 	for r := range receiver {
-		*jobs = filter(*jobs, func(j models.JobSpec) bool { return j.Id == r.Id })
 		result := results[r.Id]
 		result = append(result, r.Result)
 		results[r.Id] = result

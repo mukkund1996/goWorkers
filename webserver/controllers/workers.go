@@ -25,7 +25,7 @@ func ServerHealthCheck(c *gin.Context) {
 	})
 }
 
-func RunShortJobs(s chan models.JobSpec, jobs *[]models.JobSpec) func(c *gin.Context) {
+func RunShortJobs(s chan models.JobSpec, jobs *[]string) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		numWorkers, err := strconv.Atoi(c.Param("workerCount"))
 		if err != nil {
@@ -33,9 +33,12 @@ func RunShortJobs(s chan models.JobSpec, jobs *[]models.JobSpec) func(c *gin.Con
 		}
 		reqId := utils.GenerateId("short")
 		for i := 0; i < numWorkers; i++ {
+			*jobs = append(*jobs, reqId)
+		}
+		for i := 0; i < numWorkers; i++ {
 			jobSpec := models.JobSpec{Id: reqId, Operation: utils.JobShort}
-			*jobs = append(*jobs, jobSpec)
 			s <- jobSpec
+			*jobs = (*jobs)[:len(*jobs)-1]
 		}
 		c.IndentedJSON(200, gin.H{
 			"status": "Started",
@@ -43,17 +46,21 @@ func RunShortJobs(s chan models.JobSpec, jobs *[]models.JobSpec) func(c *gin.Con
 	}
 }
 
-func RunLongJobs(s chan models.JobSpec, jobs *[]models.JobSpec) func(c *gin.Context) {
+func RunLongJobs(s chan models.JobSpec, jobs *[]string) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		numWorkers, err := strconv.Atoi(c.Param("workerCount"))
 		if err != nil {
 			return
 		}
 
+		reqId := utils.GenerateId("short")
 		for i := 0; i < numWorkers; i++ {
-			jobSpec := models.JobSpec{Id: utils.GenerateId("long"), Operation: utils.JobLong}
-			*jobs = append(*jobs, jobSpec)
+			*jobs = append(*jobs, reqId)
+		}
+		for i := 0; i < numWorkers; i++ {
+			jobSpec := models.JobSpec{Id: reqId, Operation: utils.JobLong}
 			s <- jobSpec
+			*jobs = (*jobs)[:len(*jobs)-1]
 		}
 		c.IndentedJSON(200, gin.H{
 			"status": "Completed",
@@ -101,7 +108,7 @@ func JobResultSocket(results map[string][]int) func(c *gin.Context) {
 	}
 }
 
-func JobQueueSocket(jobs []models.JobSpec) func(c *gin.Context) {
+func JobQueueSocket(jobs *[]string) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 		if err != nil {
@@ -110,11 +117,7 @@ func JobQueueSocket(jobs []models.JobSpec) func(c *gin.Context) {
 		defer conn.Close()
 
 		for {
-			ids := []string{}
-			for _, j := range jobs {
-				ids = append(ids, j.Id)
-			}
-			body, _ := json.Marshal(ids)
+			body, _ := json.Marshal(jobs)
 			conn.WriteMessage(websocket.TextMessage, body)
 			time.Sleep(config.SocketPollingInterval)
 		}

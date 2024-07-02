@@ -7,11 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(s chan models.JobSpec, r chan models.ResultSpec, workers []models.Worker, jobs *[]models.JobSpec, results map[string][]int) *gin.Engine {
+func SetupRouter(s chan models.JobSpec, r chan models.ResultSpec, workers []models.Worker, jobs *[]string, results map[string][]int) *gin.Engine {
 	router := gin.Default()
 
 	// Websocket handlers
-	router.GET("/queue", controllers.JobQueueSocket(*jobs))
+	router.GET("/queue", controllers.JobQueueSocket(jobs))
 	router.GET("/status", controllers.CheckWorkerStatus(workers))
 	router.GET("/workerStatus", controllers.WorkerStatusSocket(&workers))
 
