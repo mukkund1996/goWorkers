@@ -1,10 +1,12 @@
 <script lang="ts">
 import { defineProps } from 'vue';
-const props = defineProps<{isOnline: boolean}>()
+const props = defineProps<{
+  online: boolean;
+}>();
 
 </script>
 <template>
-<div :class="props.isOnline ? 'online': 'offline'">
+<div :class="props.online ? 'online': 'offline'">
     <i class="pi pi-cog worker"></i>
 </div>
 </template>
@@ -14,7 +16,7 @@ const props = defineProps<{isOnline: boolean}>()
     }
 
     .online {
-        border: 1.5rem solid green;
+        border: 2px solid green;
         background-color: lightgreen;
     }
     .online .worker {
@@ -22,8 +24,8 @@ const props = defineProps<{isOnline: boolean}>()
     }
 
     .offline {
-        border: 1.5rem solid red;
-        background-color: lightcoral;
+        border: 2px solid red;
+        background-color: lightgray;
     }
     .offline .worker {
         color: red

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Server from "./components/Server.vue"
+import Server from "./components/Server.vue" 
 </script>
 
 <template>
@@ -11,8 +11,7 @@ import Server from "./components/Server.vue"
   <body>
     <div class="body-container">
       <h1>More stuff</h1>
-      <Server :isOnline="true"></Server>
-
+      <Server :online="true"></Server>
     </div>
   </body>
 </template>
