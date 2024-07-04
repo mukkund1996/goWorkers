@@ -1,1 +1,1 @@
-export const WEBSERVER_ROOT_URL = "http://localhost:8080";
+export const WEBSERVER_ROOT_URL = "localhost:8080";

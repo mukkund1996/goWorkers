@@ -1,31 +1,31 @@
 <script setup lang="ts">
 const props = defineProps<{
-  online: boolean;
+  busy: boolean;
 }>();
 </script>
 <template>
-  <div :class="props.online ? 'online' : 'offline'">
+  <div :class="props.busy ? 'busy' : 'free'">
     <i class="pi pi-cog worker"></i>
   </div>
 </template>
 <style>
 .worker {
-  font-size: 2.5rem;
+  font-size: 4.5rem;
 }
 
-.online {
+.free {
   border: 2px solid green;
   background-color: lightgreen;
 }
-.online .worker {
+.free .worker {
   color: green;
 }
 
-.offline {
+.busy {
   border: 2px solid red;
   background-color: lightgray;
 }
-.offline .worker {
+.busy .worker {
   color: red;
 }
 </style>
