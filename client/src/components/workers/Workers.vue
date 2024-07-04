@@ -14,19 +14,28 @@ onMounted(() => {
 });
 </script>
 <template>
-  <div class="server" v-for="worker in workerStatus">
-    <Server :busy="worker.Busy"></Server>
-    <h4>Worker - {{ worker.Id }}</h4>
+  <div class="server-container">
+    <div class="server" v-for="worker in workerStatus">
+      <Server :busy="worker.Busy"></Server>
+      <h4>Worker - {{ worker.Id }}</h4>
+    </div>
   </div>
 </template>
 <style>
+
+.server-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10%;
+}
 
 .server {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3%;
 }
 
 

@@ -4,11 +4,16 @@ import (
 	"webserver/controllers"
 	"webserver/models"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter(s chan models.JobSpec, r chan models.ResultSpec, workers []models.Worker, jobs *[]string, results map[string][]int) *gin.Engine {
 	router := gin.Default()
+
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	router.Use(cors.New(config))
 
 	// Websocket handlers
 	router.GET("/queue", controllers.JobQueueSocket(jobs))

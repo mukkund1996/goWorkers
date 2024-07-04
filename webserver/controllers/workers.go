@@ -32,6 +32,10 @@ func RunShortJobs(s chan models.JobSpec, jobs *[]string) func(c *gin.Context) {
 			return
 		}
 		reqId := utils.GenerateId("short")
+		c.IndentedJSON(200, gin.H{
+			"status": "Submitted",
+			"job":    reqId,
+		})
 		for i := 0; i < numWorkers; i++ {
 			*jobs = append(*jobs, reqId)
 		}
@@ -40,9 +44,6 @@ func RunShortJobs(s chan models.JobSpec, jobs *[]string) func(c *gin.Context) {
 			s <- jobSpec
 			*jobs = (*jobs)[:len(*jobs)-1]
 		}
-		c.IndentedJSON(200, gin.H{
-			"status": "Started",
-		})
 	}
 }
 
@@ -54,6 +55,10 @@ func RunLongJobs(s chan models.JobSpec, jobs *[]string) func(c *gin.Context) {
 		}
 
 		reqId := utils.GenerateId("short")
+		c.IndentedJSON(200, gin.H{
+			"status": "Submitted",
+			"job":    reqId,
+		})
 		for i := 0; i < numWorkers; i++ {
 			*jobs = append(*jobs, reqId)
 		}
@@ -62,9 +67,6 @@ func RunLongJobs(s chan models.JobSpec, jobs *[]string) func(c *gin.Context) {
 			s <- jobSpec
 			*jobs = (*jobs)[:len(*jobs)-1]
 		}
-		c.IndentedJSON(200, gin.H{
-			"status": "Completed",
-		})
 	}
 }
 
