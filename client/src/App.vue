@@ -59,5 +59,6 @@ span {
   align-items: center;
   flex-direction: row;
   gap: 10%;
+  margin-top: 20px;
 }
 </style>

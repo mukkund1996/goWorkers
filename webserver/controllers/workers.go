@@ -54,7 +54,7 @@ func RunLongJobs(s chan models.JobSpec, jobs *[]string) func(c *gin.Context) {
 			return
 		}
 
-		reqId := utils.GenerateId("short")
+		reqId := utils.GenerateId("long")
 		c.IndentedJSON(200, gin.H{
 			"status": "Submitted",
 			"job":    reqId,

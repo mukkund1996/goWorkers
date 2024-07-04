@@ -26,9 +26,10 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 5%;
-  height: 100%;
+  height: 300px;
+  width: 400px;
+  border: solid 2px lightseagreen;
 }
 
 .list-items {
