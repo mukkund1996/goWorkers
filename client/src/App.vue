@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import Server from "./components/Server.vue" 
+import Server from "./components/workers/Server.vue";
 </script>
 
 <template>
   <header>
-      <nav class="header-container">
-          <h1><span class="go-header">go</span>WORKERS</h1>
-      </nav>
+    <nav class="header-container">
+      <h1><span class="go-header">go</span>WORKERS</h1>
+    </nav>
   </header>
   <body>
     <div class="body-container">
@@ -27,7 +27,8 @@ h1 {
 .header-container {
 }
 
-.header-container h1,span {
+.header-container h1,
+span {
   font-family: Comfortaa;
   text-align: center;
 }
@@ -43,5 +44,4 @@ h1 {
   color: greenyellow;
   font-style: bold;
 }
-
 </style>
