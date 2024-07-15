@@ -9,20 +9,18 @@ const workerStatus = ref<WorkerStatus[]>();
 onMounted(() => {
   const ws = new WebSocket(`ws://${WEBSERVER_ROOT_URL}/workerStatus`);
   ws.onmessage = (event) => {
-    workerStatus.value = JSON.parse(event.data) as WorkerStatus[]
-  }
+    workerStatus.value = JSON.parse(event.data) as WorkerStatus[];
+  };
 });
 </script>
 <template>
   <div class="server-container">
     <div class="server" v-for="worker in workerStatus">
-      <Server :busy="worker.Busy"></Server>
-      <h4>Worker - {{ worker.Id }}</h4>
+      <Server :busy="worker.Busy" :name="`Node ${worker.Id}`"></Server>
     </div>
   </div>
 </template>
 <style>
-
 .server-container {
   display: flex;
   flex-direction: row;
@@ -37,6 +35,4 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
 }
-
-
 </style>

@@ -30,6 +30,7 @@ onMounted(() => {
   height: 300px;
   width: 400px;
   border: solid 2px lightseagreen;
+  overflow-y: scroll;
 }
 
 .list-items {

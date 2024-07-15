@@ -13,7 +13,7 @@ onMounted(() => {
 </script>
 <template>
   <div class="queue-container">
-    <h2>Queue</h2>
+    <h2>Queue ({{ queue.length }})</h2>
     <ul>
       <li class="list-items" v-for="job in queue">
         {{ job }}
@@ -30,6 +30,7 @@ onMounted(() => {
   height: 300px;
   width: 400px;
   border: solid 2px lightseagreen;
+  overflow-y: scroll;
 }
 
 .list-items {
