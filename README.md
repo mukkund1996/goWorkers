@@ -1,5 +1,7 @@
 # goWorkers
 
+![Demo](images/demo.gif)
+
 `goWorkers` is intended to be a simulation of a worker-pool accepting map-reduce jobs. It comprises of the following elements:
 
 - Web-server - based on GO gin framework.
